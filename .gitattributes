@@ -1,0 +1,5 @@
+* .js linguist-language = Haskell
+
+*.css linguist-language = Haskell
+
+*.html linguist-language = Haskell
