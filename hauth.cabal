@@ -1,0 +1,148 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 1a6be12b5dc7de6cbb44e68f58ca9f2b46aab70ae1dedcff331901cbd49bc106
+
+name:           hauth
+version:        0.1.0.0
+category:       Web
+homepage:       https://github.com/githubuser/hauth#readme
+bug-reports:    https://github.com/githubuser/hauth/issues
+author:         Ecky Putrady
+maintainer:     eckyp@example.com
+copyright:      2017 Ecky Putrady
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/hauth
+
+library
+  exposed-modules:
+      Adapter.HTTP.API.Auth
+      Adapter.HTTP.API.Tool
+      Adapter.HTTP.Common
+      Adapter.HTTP.Main
+      Adapter.Mysql.Auth
+      Adapter.Redis.Auth
+      Domain.Auth
+      Domain.Model
+      Domain.Validation
+      Lib
+  other-modules:
+      Paths_hauth
+  hs-source-dirs:
+      src
+  default-extensions: NoImplicitPrelude OverloadedStrings QuasiQuotes GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts DeriveGeneric
+  build-depends:
+      aeson
+    , base
+    , blaze-builder
+    , bytestring
+    , classy-prelude
+    , containers
+    , cookie
+    , digestive-functors
+    , digestive-functors-aeson
+    , hedis
+    , http-types
+    , io-streams
+    , mtl
+    , mysql-haskell
+    , pcre-heavy
+    , process
+    , resource-pool
+    , scotty
+    , strict
+    , string-random
+    , text
+    , time
+    , time-lens
+    , wai
+    , wai-extra
+    , warp
+  default-language: Haskell2010
+
+executable hauth-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_hauth
+  hs-source-dirs:
+      app
+  default-extensions: NoImplicitPrelude OverloadedStrings QuasiQuotes GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts DeriveGeneric
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base
+    , blaze-builder
+    , bytestring
+    , classy-prelude
+    , containers
+    , cookie
+    , digestive-functors
+    , digestive-functors-aeson
+    , hauth
+    , hedis
+    , http-types
+    , io-streams
+    , mtl
+    , mysql-haskell
+    , pcre-heavy
+    , process
+    , resource-pool
+    , scotty
+    , strict
+    , string-random
+    , text
+    , time
+    , time-lens
+    , wai
+    , wai-extra
+    , warp
+  default-language: Haskell2010
+
+test-suite hauth-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_hauth
+  hs-source-dirs:
+      test
+  default-extensions: NoImplicitPrelude OverloadedStrings QuasiQuotes GeneralizedNewtypeDeriving ConstraintKinds FlexibleContexts DeriveGeneric
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base
+    , blaze-builder
+    , bytestring
+    , classy-prelude
+    , containers
+    , cookie
+    , digestive-functors
+    , digestive-functors-aeson
+    , hauth
+    , hedis
+    , http-types
+    , io-streams
+    , mtl
+    , mysql-haskell
+    , pcre-heavy
+    , process
+    , resource-pool
+    , scotty
+    , strict
+    , string-random
+    , text
+    , time
+    , time-lens
+    , wai
+    , wai-extra
+    , warp
+  default-language: Haskell2010
