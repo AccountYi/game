@@ -19,8 +19,7 @@ import qualified System.IO.Strict as IS (hGetContents)
 import qualified Data.List as LIST
 import System.IO as IO
 import System.Timeout
-
-
+import qualified Adapter.HTTP.Common as C
 -- 获取初始化代码
 initCode ::Request ->IO Response
 initCode req = do
@@ -42,22 +41,27 @@ initCode req = do
 loginUser :: Request ->IO Response
 loginUser req = do
     (params, _) <- parseRequestBody lbsBackEnd req
-    let pathName = "./static/code/User.txt" 
-    --获取目标文件中的内容
-    contentsp <- ClassyPrelude.readFile pathName
-    --比较登录时的用户名和密码是否和文件中一样
-    --traceM(show(contentsp))
-    let boolPar = True
-    
-    if   boolPar
-    then   return $ responseBuilder status200 [("Content-Type","application/json")] $ lazyByteString $ encode (CodeOutput {output= "欢迎登录", message="", found="", expected="", errMessage=""})
-    else   return $ responseBuilder status200 [("Content-Type","application/json")] $ lazyByteString $ encode (CodeOutput {output= "用户不存在，请注册", message="", found="", expected="", errMessage=""})
+    let abc = requestHeaders req
+    traceM(show(abc))
+    let paramsMap = mapFromList params :: Map ByteString ByteString
+    result <-M.login (decodeUtf8 $ paramsMap MAP.! "email") $ decodeUtf8 $ paramsMap MAP.! "passw"    
+    case result of
+        Left mesg -> return $ responseBuilder status200 [("Content-Type","application/json")] $ lazyByteString $ encode (CodeOutput {output= mesg, message="", found="", expected="", errMessage=""})
+        Right sessionId ->  do
+            cookies <- C.setSessionIdInCookie sessionId
+            traceM(show(cookies))
+            return $ responseBuilder status200 [("Content-Type","application/json"),("Set-Cookies",cookies)] $ lazyByteString $ encode (CodeOutput {output= "欢迎登录", message="", found="", expected="", errMessage=""})
+
 
 -- 提交代码验证是否正确
---testParam :: (MonadIO m,PersistStoreWrite backend,BaseBackend backend ~ SqlBackend) => Request ->IO Response
+testParam ::Request ->IO Response
 testParam req = do
     (params, _) <- parseRequestBody lbsBackEnd req
     --返回代码写入文件的路径和shell脚本在哪个路径下运行的命令
+    let email = either undefined id $ mkEmail "randEmail@qq.com"
+        passw = either undefined id $ mkPassword "1234ABCDefgh"
+        auth = Auth email passw
+    M.findEmailFromUserId auth
     let paramsMap = mapFromList params :: Map ByteString ByteString
         language = (unpack . decodeUtf8) (paramsMap MAP.! "language")
         code = (unpack . decodeUtf8) (paramsMap MAP.! "code")
@@ -88,7 +92,7 @@ testParam req = do
                           then encode (CodeOutput {output=fromString value, message="Success", found="", expected="", errMessage= fromString errMessage})
                           else encode (CodeOutput {output=fromString value, message="Failure", found=LIST.head contents, expected=LIST.head inpStrs, errMessage= fromString errMessage})
                   -- 打印数据的方法 traceM(show(content))
-        return $ responseBuilder status200 [("Content-Type","application/json")] $ lazyByteString $ codeOutput  
+        return $ responseBuilder status200 [("Content-Type","application/json"),("Set-Cookie","123")] $ lazyByteString $ codeOutput  
 
 
  

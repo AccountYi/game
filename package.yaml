@@ -27,6 +27,7 @@ dependencies:
 - wai-extra
 - bytestring
 
+- lifted-base
 - containers
 - text
 - process

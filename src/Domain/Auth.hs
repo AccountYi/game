@@ -34,7 +34,7 @@ mkEmail =
   validate Email
     [ regexMatches
         [re|^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$|]
-        "Not a valid email"
+        "不是有效的电子邮件"
     ]
 
 newtype Password = Password { rawPassword :: Text } deriving (Show, Eq)
@@ -54,7 +54,7 @@ data Auth = Auth
   , authPassword :: Password
   } deriving (Show, Eq)
 
-type UserId = Int
+type UserId = Text
 
 type RegistrationSuccess = Text
 type SessionId = Text

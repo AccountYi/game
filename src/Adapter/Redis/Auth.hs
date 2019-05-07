@@ -24,7 +24,7 @@ withConn action = do
 newSession :: Redis  m => D.UserId -> m D.SessionId
 newSession userId = do
   sId <- liftIO $ stringRandomIO "[a-zA-Z0-9]{32}"
-  result <- withConn $ R.set (encodeUtf8 sId) (fromString . show $ userId) 
+  result <- withConn $ R.set (encodeUtf8 sId) (encodeUtf8 userId) 
   traceM(show(result))
   case result of
     Right R.Ok -> return sId

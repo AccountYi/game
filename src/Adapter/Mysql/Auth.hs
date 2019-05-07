@@ -7,8 +7,8 @@ import Data.Pool
 import Database.MySQL.Base
 import qualified System.IO.Streams as Streams 
 import System.IO.Unsafe (unsafePerformIO)
-
-
+import qualified Adapter.Redis.Auth as R
+import Control.Monad.Except
 
 type MS m = (MonadIO m, MonadThrow m)
 
@@ -25,23 +25,28 @@ withConn action = do
   liftIO $ withResource pool $ \conn -> action conn
 
 
-{- -- 用户登录
-login :: Auth -> m (Either LoginError SessionId)
-login auth = runExceptT $ do
-  result <- lift $ findUserByAuth auth
-  case result of
-    Nothing -> throwError LoginErrorInvalidAuth
-    Just uId -> lift $ newSession uId -}
-
+-- 用户登录
+login :: MS m =>  Text -> Text -> m (Either LoginError SessionId)
+login email passw =  runExceptT $ do
+  result <- withConn $ \conn -> query conn qry [One (MySQLText email),One (MySQLText passw)]
+  res <- liftIO .Streams.toList $ snd result
+  case res of
+    [] ->  throwError "用户不存在"
+    [_] -> lift $ R.newSession email
+  where
+    qry = "select * from user where user_name = ? and user_pawd = ?"
 
 
 findEmailFromUserId :: MS m => D.Auth -> m (Maybe (D.UserId))
 findEmailFromUserId auth =  do
-  result <- withConn $ \conn -> query_ conn qry
+
+  
+  result <- withConn $ \conn -> query conn qry [Many [MySQLText "3", MySQLText "wangwu"]]
+  --result <- withConn $ \conn -> query_ conn qry
   res <- liftIO .Streams.toList $ snd result
   traceM(show(res))
   return $ case fst result of
-    ([a]) -> Just (1)
+    ([_]) -> Just ("1")
     _ -> Nothing
   where
-    qry = "select* from user"
+    qry = "select* from user where user_id = ? and user_name = ?"
